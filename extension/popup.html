@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Locator Action Automator</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 4px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .row select,
+    .row input {
+      padding: 2px 4px;
+      font-size: 12px;
+      min-width: 80px;
+      max-width: 100px;
+    }
+    .row input.actionValue {
+      min-width: 100px;
+      max-width: 120px;
+    }
+    .row button.remove-field-button {
+      padding: 2px 6px;
+    }
+    #locator-section {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    #controls {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .add-field-button, .remove-field-button {
+      font-size: 1.1em;
+      padding: 0 8px;
+    }
+    button {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    label {
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="locator-section"></div>
+  <hr>
+  <div class="row" id="controls">
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+    <button id="reset">Reset</button>
+    <label for="loopCount">Loop:</label>
+    <input type="number" id="loopCount" value="1" min="1" style="width: 50px;">
+    <button id="add-field" class="add-field-button">+</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
