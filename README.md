@@ -52,6 +52,10 @@ chrome://extensions/
 
 ## 🙋 Feedback
 
+https://github.com/user-attachments/assets/4c071ac9-760e-4f90-bc89-0e954d64a90f
+
+
+
 This was built in a day as a prototype. I'm actively improving it.  
 **Suggestions, bug reports, and contributions are very welcome!**
 
