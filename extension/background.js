@@ -86,29 +86,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               if (checkStopped()) return;
 
               const el = getElement(task.locatorType, task.locatorValue);
-              if (!el) continue;
+              try {
+                switch (task.action) {
+                  case "click":
+                    el?.click();
+                    break;
 
-              switch (task.action) {
-                case "click":
-                  el.click();
-                  break;
+                  case "input":
+                    if (el) simulateTyping(el, task.actionValue);
+                    break;
 
-                case "input":
-                  simulateTyping(el, task.actionValue);
-                  break;
+                  case "random_string":
+                    if (el) simulateTyping(el, generateRandomString());
+                    break;
 
-                case "random_string":
-                  const randomStr = generateRandomString();
-                  simulateTyping(el, randomStr);
-                  break;
+                  case "select":
+                    if (el) {
+                      el.value = task.actionValue;
+                      el.dispatchEvent(new Event("change", { bubbles: true }));
+                    }
+                    break;
 
-                case "select":
-                  el.value = task.actionValue;
-                  el.dispatchEvent(new Event("change", { bubbles: true }));
-                  break;
+                  case "wait":
+                    const waitTime = parseInt(task.actionValue, 10) || 1000;
+                    console.log(`Waiting for ${waitTime}ms`);
+                    await delay(waitTime);
+                    break;
+                }
+              } catch (err) {
+                console.error(`Error performing action ${task.action}`, err);
               }
 
-              await delay(500); // Wait between each action
+              await delay(300); // short pause after each task
             }
           }
         })();

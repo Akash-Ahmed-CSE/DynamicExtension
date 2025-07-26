@@ -1,16 +1,26 @@
 let fieldCount = 0;
 const locatorSection = document.getElementById("locator-section");
-const addField = document.getElementById("add-field");
 const resetButton = document.getElementById("reset");
+const importBtn = document.getElementById("import");
+const exportBtn = document.getElementById("export");
+const fileInput = document.getElementById("file-input");
+const statusMessage = document.getElementById("status-message");
 
-addField.onclick = () => addLocatorRow();
-resetButton.onclick = () => {
-  locatorSection.innerHTML = "";
-  fieldCount = 0;
-  addLocatorRow();
-};
+// Initialize with one empty row
+addLocatorRow();
 
-function addLocatorRow() {
+function showStatusMessage(message, isSuccess = true) {
+  statusMessage.textContent = message;
+  statusMessage.className = `status-message ${isSuccess ? 'success' : ''}`;
+  statusMessage.style.display = 'block';
+  
+  // Hide the message after 3 seconds
+  setTimeout(() => {
+    statusMessage.style.display = 'none';
+  }, 3000);
+}
+
+function createLocatorRow(task = {}) {
   const row = document.createElement("div");
   row.className = "row";
   row.innerHTML = `
@@ -26,155 +36,200 @@ function addLocatorRow() {
       <option value="input">Input</option>
       <option value="random_string">Random String</option>
       <option value="select">Select</option>
+      <option value="wait">Wait</option>
     </select>
-    <input class="actionValue" placeholder="Value (for input/select)" style="display:none;">
-    <button class="add-field-button">+</button>
-    <button class="remove-field-button">-</button>
+    <input class="actionValue" placeholder="Value (for input/select)" style="display:none; min-width: 100px;">
+    <input class="waitTime" type="number" placeholder="Wait time (ms)" min="0" style="display:none; width: 90px;">
+    <div class="row-actions">
+      <button class="remove-field-button">-</button>
+      <button class="add-field-button">+</button>
+    </div>
   `;
 
-  const actionDropdown = row.querySelector(".action");
-  const actionValueInput = row.querySelector(".actionValue");
-
-  function toggleActionValueVisibility() {
-    // Show actionValue input for "input" and "select" actions only
-    actionValueInput.style.display =
-      actionDropdown.value === "input" || actionDropdown.value === "select"
-        ? "inline-block"
-        : "none";
+  // Set values if task is provided
+  if (task.locatorType) {
+    row.querySelector(".locatorType").value = task.locatorType;
+  }
+  if (task.locatorValue) {
+    row.querySelector(".locatorValue").value = task.locatorValue;
+  }
+  if (task.action) {
+    row.querySelector(".action").value = task.action;
+  }
+  if (task.actionValue) {
+    if (task.action === "wait") {
+      row.querySelector(".waitTime").value = task.actionValue;
+    } else if (task.action === "input" || task.action === "select") {
+      row.querySelector(".actionValue").value = task.actionValue;
+    }
   }
 
-  toggleActionValueVisibility();
-  actionDropdown.addEventListener("change", toggleActionValueVisibility);
+  const locatorTypeDropdown = row.querySelector(".locatorType");
+  const locatorValueInput = row.querySelector(".locatorValue");
+  const actionDropdown = row.querySelector(".action");
+  const actionValueInput = row.querySelector(".actionValue");
+  const waitTimeInput = row.querySelector(".waitTime");
 
-  row.querySelector(".add-field-button").onclick = () => addLocatorRow();
-  row.querySelector(".remove-field-button").onclick = () => {
+  function toggleInputs() {
+    const action = actionDropdown.value;
+
+    if (action === "wait") {
+      locatorTypeDropdown.disabled = true;
+      locatorValueInput.disabled = true;
+      locatorValueInput.style.backgroundColor = "#eee";
+      actionValueInput.style.display = "none";
+      waitTimeInput.style.display = "inline-block";
+    } else {
+      locatorTypeDropdown.disabled = false;
+      locatorValueInput.disabled = false;
+      locatorValueInput.style.backgroundColor = "";
+      waitTimeInput.style.display = "none";
+
+      if (action === "input" || action === "select") {
+        actionValueInput.style.display = "inline-block";
+      } else {
+        actionValueInput.style.display = "none";
+      }
+    }
+  }
+
+  toggleInputs();
+  actionDropdown.addEventListener("change", toggleInputs);
+
+  return row;
+}
+
+function addLocatorRow(task = null, referenceRow = null) {
+  const row = createLocatorRow(task || {});
+
+  // Add button functionality
+  row.querySelector(".add-field-button").addEventListener("click", (e) => {
+    e.stopPropagation();
+    addLocatorRow(null, row);
+  });
+
+  // Remove button functionality
+  row.querySelector(".remove-field-button").addEventListener("click", (e) => {
+    e.stopPropagation();
     if (locatorSection.children.length > 1) {
       locatorSection.removeChild(row);
       fieldCount--;
     }
-  };
+  });
 
-  locatorSection.appendChild(row);
+  if (referenceRow) {
+    referenceRow.after(row);
+  } else {
+    locatorSection.appendChild(row);
+  }
+  
   fieldCount++;
 }
 
-addLocatorRow();
+// Import functionality
+importBtn.addEventListener("click", () => fileInput.click());
 
-document.getElementById("start").onclick = async () => {
-  const loop = parseInt(document.getElementById("loopCount").value || "1");
+fileInput.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const tasks = JSON.parse(text);
+    loadTasks(tasks);
+    showStatusMessage(`Successfully imported ${tasks.length} task(s)`);
+  } catch (error) {
+    console.error("Error importing file:", error);
+    showStatusMessage("Error importing file. Please check the file format.", false);
+  }
+  
+  fileInput.value = '';
+});
+
+// Export functionality
+exportBtn.addEventListener("click", () => {
+  const tasks = getCurrentTasks();
+  if (tasks.length === 0) {
+    showStatusMessage("No tasks to export!", false);
+    return;
+  }
+
+  const jsonData = JSON.stringify(tasks, null, 2);
+  const blob = new Blob([jsonData], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "automation-tasks.json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+
+  showStatusMessage(`Successfully exported ${tasks.length} task(s)`);
+});
+
+function getCurrentTasks() {
   const tasks = [];
   document.querySelectorAll(".row").forEach((row) => {
     const locatorTypeEl = row.querySelector(".locatorType");
     const locatorValueEl = row.querySelector(".locatorValue");
     const actionEl = row.querySelector(".action");
     const actionValueEl = row.querySelector(".actionValue");
+    const waitTimeEl = row.querySelector(".waitTime");
 
-    if (!locatorTypeEl || !locatorValueEl || !actionEl || !actionValueEl) return;
+    if (!locatorTypeEl || !locatorValueEl || !actionEl) return;
 
     const locatorType = locatorTypeEl.value;
     const locatorValue = locatorValueEl.value;
     const action = actionEl.value;
 
-    // For both "input" and "select", take the value from actionValue input
-    const actionValue =
-      action === "input" || action === "select" ? actionValueEl.value : "";
-
-    if (locatorValue.trim()) {
-      tasks.push({ locatorType, locatorValue, action, actionValue });
+    let actionValue = "";
+    if (action === "input" || action === "select") {
+      actionValue = actionValueEl.value;
+    } else if (action === "wait") {
+      actionValue = waitTimeEl.value;
     }
+
+    tasks.push({ locatorType, locatorValue, action, actionValue });
   });
+  return tasks;
+}
+
+function loadTasks(tasks) {
+  locatorSection.innerHTML = "";
+  fieldCount = 0;
+  
+  tasks.forEach(task => addLocatorRow(task));
+  
+  if (tasks.length === 0) addLocatorRow();
+}
+
+// Reset functionality
+resetButton.addEventListener("click", () => {
+  locatorSection.innerHTML = "";
+  fieldCount = 0;
+  addLocatorRow();
+  document.getElementById("loop-count").value = "1";
+  showStatusMessage("UI reset successfully");
+});
+
+// Start functionality
+document.getElementById("start").onclick = async () => {
+  const loop = parseInt(document.getElementById("loop-count").value || "1");
+  const tasks = getCurrentTasks();
 
   if (tasks.length === 0) {
-    alert("Please provide at least one valid locator.");
+    showStatusMessage("Please provide at least one valid locator or wait action", false);
     return;
   }
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => localStorage.setItem("__automationStopped__", "false"),
-  });
-
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    args: [tasks, loop],
-    func: (tasks, loop) => {
-      const getElement = (type, value) => {
-        try {
-          switch (type) {
-            case "css":
-              return document.querySelector(value);
-            case "id":
-              return document.getElementById(value);
-            case "name":
-              return document.getElementsByName(value)[0];
-            case "xpath":
-              return document.evaluate(
-                value,
-                document,
-                null,
-                XPathResult.FIRST_ORDERED_NODE_TYPE,
-                null
-              ).singleNodeValue;
-            default:
-              return null;
-          }
-        } catch (e) {
-          console.error("Invalid selector:", value);
-          return null;
-        }
-      };
-
-      const simulateTyping = (el, value) => {
-        el.focus();
-        el.value = "";
-        for (const char of value) {
-          el.value += char;
-          el.dispatchEvent(new InputEvent("input", { bubbles: true, data: char }));
-        }
-        el.dispatchEvent(new Event("change", { bubbles: true }));
-      };
-
-      const generateRandomString = () =>
-        Math.random()
-          .toString(36)
-          .substring(2, 7);
-      const delay = (ms) => new Promise((r) => setTimeout(r, ms));
-
-      (async () => {
-        for (let i = 0; i < loop; i++) {
-          if (localStorage.getItem("__automationStopped__") === "true") break;
-          for (const task of tasks) {
-            if (localStorage.getItem("__automationStopped__") === "true") return;
-            const el = getElement(task.locatorType, task.locatorValue);
-            if (!el) continue;
-            switch (task.action) {
-              case "click":
-                el.click();
-                break;
-              case "input":
-                simulateTyping(el, task.actionValue);
-                break;
-              case "random_string":
-                simulateTyping(el, generateRandomString());
-                break;
-              case "select":
-                el.value = task.actionValue;
-                el.dispatchEvent(new Event("change", { bubbles: true }));
-                break;
-            }
-            await delay(300);
-          }
-        }
-      })();
-    },
-  });
-};
-
-document.getElementById("stop").onclick = async () => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => localStorage.setItem("__automationStopped__", "true"),
+  chrome.runtime.sendMessage({
+    command: "start",
+    tabId: tab.id,
+    tasks,
+    loop,
   });
 };

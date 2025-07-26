@@ -7,6 +7,7 @@
       font-family: Arial;
       padding: 8px;
       font-size: 13px;
+      width: 450px;
     }
     .row {
       display: flex;
@@ -14,7 +15,7 @@
       gap: 4px;
       margin-bottom: 4px;
       flex-wrap: nowrap;
-      overflow-x: auto;
+      overflow-x: hidden;
     }
     .row select,
     .row input {
@@ -22,48 +23,97 @@
       font-size: 12px;
       min-width: 80px;
       max-width: 100px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
     }
-    .row input.actionValue {
+    .row input.actionValue,
+    .row input.waitTime {
       min-width: 100px;
       max-width: 120px;
     }
-    .row button.remove-field-button {
-      padding: 2px 6px;
+    .row-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .row button {
+      padding: 1px 5px;
+      font-size: 11px;
+      height: 22px;
     }
     #locator-section {
       max-height: 250px;
       overflow-y: auto;
+      margin-bottom: 8px;
     }
     #controls {
       margin-top: 8px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 6px;
+    }
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
       flex-wrap: wrap;
     }
-    .add-field-button, .remove-field-button {
-      font-size: 1.1em;
-      padding: 0 8px;
+    .control-row button {
+      font-size: 11px;
+      padding: 3px 7px;
+      height: 24px;
+      white-space: nowrap;
     }
-    button {
-      font-size: 12px;
-      padding: 4px 8px;
+    #file-input {
+      display: none;
     }
-    label {
+    .loop-control {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #loop-count {
+      width: 140px;
+      padding: 3px;
       font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    hr {
+      margin: 6px 0;
+      border: 0;
+      border-top: 1px solid #eee;
+    }
+    .status-message {
+      font-size: 12px;
+      padding: 4px;
+      border-radius: 3px;
+      margin-top: 4px;
+      text-align: center;
+    }
+    .success {
+      background-color: #e6ffed;
+      color: #22863a;
     }
   </style>
 </head>
 <body>
   <div id="locator-section"></div>
   <hr>
-  <div class="row" id="controls">
-    <button id="start">Start</button>
-    <button id="stop">Stop</button>
-    <button id="reset">Reset</button>
-    <label for="loopCount">Loop:</label>
-    <input type="number" id="loopCount" value="1" min="1" style="width: 50px;">
-    <button id="add-field" class="add-field-button">+</button>
+  <div id="controls">
+    <div class="control-row">
+      <button id="import">Import</button>
+      <button id="start">Start</button>
+      <button id="export">Export</button>
+      <button id="reset">Reset UI</button>
+      <div class="loop-control">
+        <input type="number" id="loop-count" placeholder="Loop Count (default 1)" min="1" value="">
+      </div>
+    </div>
+    <div id="status-message" class="status-message" style="display: none;"></div>
+    <input type="file" id="file-input" accept=".json">
   </div>
   <script src="popup.js"></script>
 </body>
+</html>
