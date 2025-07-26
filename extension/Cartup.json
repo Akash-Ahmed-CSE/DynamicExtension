@@ -1,0 +1,80 @@
+[
+  {
+    "locatorType": "xpath",
+    "locatorValue": "//a[normalize-space()='Login']",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "name",
+    "locatorValue": "email_or_phone",
+    "action": "input",
+    "actionValue": "01743304573"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "input[placeholder='Password']",
+    "action": "input",
+    "actionValue": "Therap321#"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "button[type='submit']",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "",
+    "action": "wait",
+    "actionValue": "10000"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "input[placeholder='Search in Cartup']",
+    "action": "input",
+    "actionValue": "Samsung"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "div[class='space-y-1 border-b pb-2 pt-2 sm:space-y-3 sm:pb-3'] div:nth-child(1)",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "",
+    "action": "wait",
+    "actionValue": "4000"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "span[class='whitespace-nowrap']",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "",
+    "action": "wait",
+    "actionValue": "2000"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "button[class='ml-2 text-[#181717]",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "",
+    "action": "wait",
+    "actionValue": "2000"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "group-hover:text-highlight']",
+    "action": "click",
+    "actionValue": ""
+  }
+]

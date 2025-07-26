@@ -1,0 +1,87 @@
+[
+  {
+    "locatorType": "css",
+    "locatorValue": "#user-name",
+    "action": "input",
+    "actionValue": "standard_user"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#password",
+    "action": "input",
+    "actionValue": "secret_sauce"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#login-button",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "",
+    "locatorValue": "",
+    "action": "wait",
+    "actionValue": "2000"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#add-to-cart-sauce-labs-backpack",
+    "action": "click",
+    "actionValue": ""
+  },  
+{
+    "locatorType": "css",
+    "locatorValue": ".shopping_cart_link",
+    "action": "click",
+    "actionValue": ""
+  },
+
+  {
+    "locatorType": "css",
+    "locatorValue": "#checkout",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#first-name",
+    "action": "random_string",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#last-name",
+    "action": "random_string",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#postal-code",
+    "action": "input",
+    "actionValue": "1234"
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#continue",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#finish",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#react-burger-menu-btn",
+    "action": "click",
+    "actionValue": ""
+  },
+  {
+    "locatorType": "css",
+    "locatorValue": "#logout_sidebar_link",
+    "action": "click",
+    "actionValue": ""
+  }
+]
