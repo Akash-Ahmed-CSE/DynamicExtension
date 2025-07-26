@@ -75,9 +75,10 @@ A Chrome extension that automates web interactions by executing predefined actio
     "action": "click"
   }
 ]
+```
 
 
 
 
-https://github.com/user-attachments/assets/77cde388-88c8-4ff6-a6fb-3e0c30bff5f8
+https://github.com/user-attachments/assets/80fccde5-fb9e-4e5f-92f2-c9464001e118
 
